@@ -124,8 +124,8 @@ ISVacationDay
 
 ```
 -- DO THIS --
-userID
-userPermissionID
+userId
+userPermissionId
 
 -- NOT THIS --
 id
@@ -136,7 +136,7 @@ upid
 * Foreign keys should be prefixed with a capitalized `FK_` in order to visually denote relationships and also to avoid ambigous table selects. After the `FK_` the name of the column must comply with our naming conventions.
 ```
 -- DO THIS --
-FK_userID
+FK_userId
 
 -- NOT THIS --
 fkuserid
