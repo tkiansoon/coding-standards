@@ -22,18 +22,20 @@
   1. [Method Chaining](#method-chaining)
   1. [Object Creation](#object-creation)
   1. [End of Lines](#eof)
-  1. [Components](#cfc)
-    1. [CFC Documentation](#cfc-documentation)
-    1. [CFC Scopes](#cfc-scopes)
-    1. [CFC Constructors](#cfc-constructors)
-    1. [CFC Var Scoping](#cfc-varscoping)
-    1. [CFC Output](#cfc-output)
-    1. [CFC Return Types](#cfc-returntypes)
-    1. [CFC External Scopes](#cfc-external-scopes)
-    1. [CFC Default Arguments](#cfc-default-arguments)
-    1. [CFC Inheritance vs Composition](#cfc-inheritance)
+  1. [Components](#cfc):
+    * [CFC Documentation](#cfc-documentation)
+    * [CFC Scopes](#cfc-scopes)
+    * [CFC Constructors](#cfc-constructors)
+    * [CFC Var Scoping](#cfc-varscoping)
+    * [CFC Output](#cfc-output)
+    * [CFC Return Types](#cfc-returntypes)
+    * [CFC External Scopes](#cfc-external-scopes)
+    * [CFC Default Arguments](#cfc-default-arguments)
+    * [CFC Inheritance vs Composition](#cfc-inheritance)
+    * [CFML Tag vs Script](#cfc-script)
   1. [General Best Practices](#general)
-  1. [ColdBox Best Practices](#coldbox)
+  1. [ColdBox/FW1 Best Practices](#coldbox)
+  1. [CFLint Config](#cflint)
 
 
 ## <a name="introduction">Introduction</a>
@@ -47,17 +49,13 @@ This document is intended to be a concise summary of best practices for anyone b
 
 We have created several IDE formatter tools and some Sublime packages we use:
 
-* [CFBuilder Formatter](https://drive.google.com/open?id=0B3aRjVTf2SeqNmFBZmZJVjR5TUU)
-* [CFBuilder Preferences](https://drive.google.com/open?id=0B3aRjVTf2Seqb2pQMnVIQ0NSLTA)
-* [CFBuilder/Eclipse Java Cleanup](https://drive.google.com/open?id=0B3aRjVTf2SeqSUZDbW5UUjVwOU0)
-* [CFBuilder/Eclipse Java Formatter](https://drive.google.com/open?id=0B3aRjVTf2SeqSndHZEppUmdQLUU)
-* [CFBuilder/Eclipse JavaScript Formatter](https://drive.google.com/open?id=0B3aRjVTf2SeqRlctSDhtZDRoRmM)
 * [Sublime Alignment](https://www.granneman.com/webdev/editors/sublime-text/packages/how-to-install-and-use-sublime-alignment/)
 * [Sublime Emmet](https://packagecontrol.io/packages/Emmet)
 * [Sublime Bracket Highlighter](https://packagecontrol.io/packages/BracketHighlighter)
 * [Sublime DockBlockr](https://packagecontrol.io/packages/DocBlockr)
 * [Sublime Markdown](https://packagecontrol.io/packages/Markdown%20Preview)
 * [Sublime ColdBox Platform](https://packagecontrol.io/packages/ColdBox%20Platform)
+* [VS Code - coming soon]
 
 **[[⬆]](#TOC)**
 
@@ -76,6 +74,7 @@ AVOID abbreviations if possible. For example, `calculateSalary()` is a better me
 
 -   **acc** for accessibility, as in ButtonAccImpl
 -   **auto** for automatic, as in autoLayout
+-   **avg** for average, as in avgSalary
 -   **eval** for evaluate, as in EvalBindingResponder
 -   **impl** for implementation, as in ButtonAccImpl
 -   **info** for information, as in GridRowInfo
@@ -101,13 +100,10 @@ parseHTTPString()
 ParseHttpString()
 
 -- DO THIS --
-UrlScanner.cfc
+urlScanner.cfc
 parseHttpString()
-XmlHttpRequest.cfc
+xmlHttpRequest.cfc
 ```
-
-* [CFC Tips](http://cfdj.sys-con.com/read/41660.htm)
-* [Java Coding Standards](http://www.oracle.com/technetwork/java/javase/documentation/codeconvtoc-136057.html)
 
 
 **[[⬆]](#TOC)**
@@ -243,36 +239,17 @@ They should be descriptive lowercase single words, acronyms or abbreviations. If
 ``` js
 -- DO THIS --
 niceLocation = "Miami";
-results = "";
+result = "";
 avgSalary = "323";
 
 -- NOT THIS --
 NICELOCATION = "Miami";
-Results = "";
+Result = "";
 average-salary = "323";
 ```
 
 
-
-**[[⬆]](#TOC)**
-
-
-### <a name="constants">Constants or Static Variables</a>
-
-They should all be in upper case separated by underscores "\_". Examples:
-
-```js
--- DO THIS --
-INTERCEPTOR_POINTS = "";
-LINE_SEP = "-";
-MAX = "123";
-
--- NOT THIS --
-interceptor-points = "";
-line_sep = "d";
-max = "123";
-```
-
+sd
 
 **[[⬆]](#TOC)**
 
@@ -311,8 +288,11 @@ for( var x = 1; x lte 10; x++ ){
 }
 
 if( false ){
+
 } else if( XX ){
+
 } else {
+
 }
 
 // NOT THIS
@@ -456,15 +436,12 @@ var c = newCriteria().isEq( "id", arguments.id ).createAlias( "orders", "o" ).is
 Prefer the `new` declaration over the `createObject` declaration to improve readability:
 
 ``` js
-// do this
+// DO THIS
 obj = new coldbox.system.testing.TestBox();
 
-// dont this
+// NOT THIS
 obj = createObject( "component", "coldbox.system.testing.testBox" ).init();
 ```
-
-
-> However, please note that this conventions are only if you are writing libraries. If you are within an ecosystem that provides WireBox Dependency Injection, then **always** prefer WireBox.
 
 
 **[[⬆]](#TOC)**
@@ -473,10 +450,14 @@ obj = createObject( "component", "coldbox.system.testing.testBox" ).init();
 
 Do not add extra lines to files when ending them:
 
-``` coldfusion
-// dont this
+``` js
+// DO THIS
 component{
-.....
+}
+
+// NOT THIS
+component{
+
 }
 ```
 
@@ -621,20 +602,21 @@ Always, always, always use `var` or the `local` scope for local variables inside
 This means that if somebody persists (stores) this component in memory, subsequent calls can and will override variables and create all sorts of memory problems. There is an open source project called [http://www.schierberl.com/cfblog/index.cfm/2006/7/20/varScoper-10-release varscoper] that can check all of your components for var scoping issues, even if they are using cfscript. Var scoping applies to methods inside components and also to UDF's/Closures in order to comply with best practices.
 
 
-```js
--- DO THIS --
+``` js
+// DO THIS 
 <cffunction name="myFunction" access="public" returntype="void" output="false" hint="This methods does nothing">
-  <cfset var i = 0>
-  <cfset var qGet = "">
-  <cfquery name="qGet">
+  <cfset var i = 0 />
+  <cfset var getData = "" />
+  <cfquery name="getData">
   </cfquery>
   <cfloop from="1" to ="20" index="i">
   </cfloop>
 </cffunction>
-
--- NOT THIS --
+``` 
+``` js
+// NOT THIS
 <cffunction name="myFunction" access="public" returntype="void" output="false" hint="This methods does nothing">
-<cfquery name="qGet">
+<cfquery name="getData">
 </cfquery>
 <cfloop from="1" to ="20" index="i">
 </cfloop>
@@ -695,6 +677,11 @@ Always prefer object composition over inheritance. This is where another compone
 * http://brighton.ncsa.uiuc.edu/prajlich/T/node14.html
 * http://www.artima.com/lejava/articles/designprinciples4.html
 * http://guidewiredevelopment.wordpress.com/2008/02/05/favoring-composition-over-inheritance/
+
+**[[⬆]](#TOC)**
+
+### <a name="cfc-script">CFML Tag vs Script</a>
+Use scripting language (cfscript) for cfcs except database gateway to ease query scripting includes sql injection prevention.
 
 **[[⬆]](#TOC)**
 
@@ -872,7 +859,7 @@ if( isDefined("arguments.car") )
 
 **[[⬆]](#TOC)**
 
-## <a name="coldbox">ColdBox Specific Best Practices</a>
+## <a name="coldbox">ColdBox / Framework Specific Best Practices</a>
 
 * Leverage the `rc and prc` scopes directly instead of referencing the `event` object unless you need default values
 * Leverage `var` or `local` scope in the event handlers if those variables will NOT be used in layouts/views
@@ -881,5 +868,115 @@ if( isDefined("arguments.car") )
 * Do not create dual performing actions that respond to different HTTP verbs. Like a `list()` action that lists and saves to the database in a post. Create two actions, two concerns.
 * Always always always leverage injection via WireBox
 * Remember that all event handlers are singletons
+
+**[[⬆]](#TOC)**
+
+## <a name="cflint">CFLint Config</a>
+
+CFLint Documentation: 
+https://github.com/cflint/CFLint/blob/master/RULES.md
+
+More Info: https://docs.google.com/spreadsheets/d/1_FkG9Bm29MtsBRzme2EEVKxVU7jjqPaGzlmTyJx73YU/edit#gid=0
+
+### BugProne
+
+* ARG_VAR_CONFLICT
+* NO_DEFAULT_INSIDE_SWITCH
+* NESTED_CFOUTPUT
+* OUTPUT_ATTR
+* MISSING_VAR
+* COMPARE_INSTEAD_OF_ASSIGN
+* AVOID_USING_ISDATE
+
+### Correctness
+
+* ARG_DEFAULT_MISSING
+* ARG_TYPE_ANY
+* ARG_TYPE_MISSING
+* ARG_VAR_MIXED
+* QUERYNEW_DATATYPE
+* UNUSED_LOCAL_VARIABLE
+* UNUSED_METHOD_ARGUMENT
+* UNQUOTED_STRUCT_KEY
+* STRUCT_ARRAY_NOTATION
+* USE_DISPLAY_NAME
+
+### BadPractice
+* AVOID_USING_ABORT
+* AVOID_USING_CFABORT_TAG
+* AVOID_USING_CFDUMP_TAG
+* AVOID_USING_CFEXECUTE_TAG
+* AVOID_USING_CFINSERT_TAG
+* AVOID_USING_CFMODULE_TAG
+* AVOID_USING_CFUPDATE_TAG
+* AVOID_USING_WRITEDUMP
+* GLOBAL_LITERAL_VALUE_USED_TOO_OFTEN
+* GLOBAL_VAR
+* LOCAL_LITERAL_VALUE_USED_TOO_OFTEN
+* AVOID_USING_DEBUG_ATTR
+* AVOID_USING_CFSETTING_DEBUG
+* AVOID_USING_CFINCLUDE_TAG
+* AVOID_USING_ISDEBUGMODE
+
+### Security
+* SQL_SELECT_STAR
+* CFQUERYPARAM_REQ
+* QUERYPARAM_REQ
+* NEVER_USE_QUERY_IN_CFM
+
+### CodeStyle
+* ARG_HINT_MISSING
+* COMPONENT_HINT_MISSING
+* FUNCTION_HINT_MISSING
+* FUNCTION_TYPE_ANY
+* FUNCTION_TYPE_MISSING
+* ARG_HINT_MISSING_SCRIPT
+
+### ModernSyntax
+* AVOID_USING_ARRAYNEW
+* AVOID_USING_STRUCTNEW
+* AVOID_USING_CREATEOBJECT
+
+### Complexity
+* COMPLEX_BOOLEAN_CHECK
+* EXCESSIVE_FUNCTIONS (Max: 20)
+* EXCESSIVE_ARGUMENTS
+* EXPLICIT_BOOLEAN_CHECK
+* EXCESSIVE_COMPONENT_LENGTH
+* EXCESSIVE_FUNCTION_LENGTH
+* FUNCTION_TOO_COMPLEX
+
+### Naming
+* METHOD_HAS_PREFIX_OR_POSTFIX
+* METHOD_INVALID_NAME
+* METHOD_IS_TEMPORARY
+* METHOD_TOO_SHORT
+* METHOD_TOO_LONG
+* METHOD_TOO_WORDY
+* VAR_ALLCAPS_NAME
+* VAR_HAS_PREFIX_OR_POSTFIX
+* VAR_INVALID_NAME
+* VAR_IS_TEMPORARY
+* VAR_TOO_SHORT (Min: 2, Max: 30)
+* VAR_TOO_LONG (Min: 2, Max: 30)
+* VAR_TOO_WORDY
+* SCOPE_ALLCAPS_NAME
+* ARGUMENT_MISSING_NAME
+* ARGUMENT_INVALID_NAME
+* ARGUMENT_ALLCAPS_NAME
+* ARGUMENT_TOO_SHORT (Min: 2, Max: 20)
+* ARGUMENT_TOO_LONG (Min: 2, Max: 20)
+* ARGUMENT_TOO_WORDY
+* ARGUMENT_IS_TEMPORARY
+* ARGUMENT_HAS_PREFIX_OR_POSTFIX
+* METHOD_ALLCAPS_NAME
+* COMPONENT_INVALID_NAME
+* COMPONENT_ALLCAPS_NAME
+* COMPONENT_TOO_SHORT
+* COMPONENT_TOO_LONG
+* COMPONENT_TOO_WORDY
+* COMPONENT_IS_TEMPORARY
+* COMPONENT_HAS_PREFIX_OR_POSTFIX
+* PACKAGE_CASE_MISMATCH
 
 **[[⬆]](#TOC)**
