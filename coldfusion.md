@@ -1,4 +1,4 @@
-# Ortus ColdFusion (CFML) Standards & Best Practices
+# ColdFusion (CFML) Standards & Best Practices
 
 ## <a name='TOC'>Table of Contents</a>
 
