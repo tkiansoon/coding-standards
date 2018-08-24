@@ -3,18 +3,18 @@
 	"excludes": [
 		  {"code": "VAR_TOO_WORDY"}
 		, {"code": "METHOD_TOO_WORDY"}
+		, {"code": "ARGUMENT_TOO_WORDY"}
 		, {"code": "STRUCT_ARRAY_NOTATION"}
 		, {"code": "UNQUOTED_STRUCT_KEY"}
-		, {"code": "COMPONENT_HINT_MISSING"}
-		, {"code": "ARG_HINT_MISSING"}
-		, {"code": "ARG_HINT_MISSING_SCRIPT"}
 	],
     "inheritParent": false,
     "parameters": {
-		  "TooManyFunctionsChecker.maximum" : 20
-		, "VariableNameChecker.maxLength" : 30
-		, "VariableNameChecker.minLength" : 2
-		, "ArgumentNameChecker.minLength" : 2
-		, "MethodNameChecker.maxLength": 30
+		  "TooManyFunctionsChecker.maximum" : 20,
+			"TooManyArgumentsChecker.maximum": 30,
+			"VariableNameChecker.maxLength" : 30,
+			"VariableNameChecker.minLength" : 2,
+			"ArgumentNameChecker.minLength" : 2,
+			"ArgumentNameChecker.maxLength" : 30,
+			"MethodNameChecker.maxLength": 30
 	}
 }

@@ -40,7 +40,7 @@
 
 ## <a name="introduction">Introduction</a>
 
-This document is intended to be a concise summary of best practices for anyone building CFML applications within the Ortus team. Several external resources used when creating this document. Please note that this is a guideline based on past development experience and industry standards. Please use common sense when applying them and note that this document is ever changing as development trends continue to change.
+This document is intended to be a concise summary of best practices for anyone building CFML applications within the Vanson team. Several external resources used when creating this document. Please note that this is a guideline based on past development experience and industry standards. Please use common sense when applying them and note that this document is ever changing as development trends continue to change.
 
 **[[⬆]](#TOC)**
 
@@ -54,8 +54,17 @@ We have created several IDE formatter tools and some Sublime packages we use:
 * [Sublime Bracket Highlighter](https://packagecontrol.io/packages/BracketHighlighter)
 * [Sublime DockBlockr](https://packagecontrol.io/packages/DocBlockr)
 * [Sublime Markdown](https://packagecontrol.io/packages/Markdown%20Preview)
-* [Sublime ColdBox Platform](https://packagecontrol.io/packages/ColdBox%20Platform)
-* [VS Code - coming soon]
+* [Sublime ColdFusion](https://github.com/jcberquist/sublimetext-cfml)
+* [Sublime ColdBox / TestBox](https://github.com/lmajano/cbox-coldbox-sublime)
+* [Sublime Linter](http://www.sublimelinter.com/en/stable/)
+* [Sublime CFLint](https://github.com/ckaznocha/SublimeLinter-contrib-CFLint)
+* [VS Code - Beautify](https://github.com/HookyQR/VSCodeBeautify)
+* [VS Code - ColdFusion](https://github.com/ilich/vscode-coldfusion)
+* [VS Code - CFLint](https://github.com/KamasamaK/vscode-cflint)
+* [VS Code - ColdFusion Extension](https://github.com/KamasamaK/vscode-cfml)
+* [VS Code - TestBox](https://github.com/Ortus-Solutions/vscode-testbox)
+* [VS Code - Markdown](https://github.com/DavidAnson/vscode-markdownlint)
+
 
 **[[⬆]](#TOC)**
 
@@ -112,7 +121,7 @@ xmlHttpRequest.cfc
   
 ### <a name="package-names">Package Names</a>
 
-Package names should be unique and in lowercase letters. Underscores may be used or hyphens if necessary. You can package your objects/files using two well known approaches:
+Packages (folders) should be in lowercase. Underscores may be used or hyphens if necessary. You can package your objects/files using two well known approaches:
 
 1.  By Functionality (Best Practice)
 2.  By object types
@@ -135,26 +144,26 @@ The best practice is to use packaging by functionality if at all possible. This 
 
 ### <a name="object-names">Class/Component/Interface Names</a>
 
-Class/Component/Interface names should be nouns, as they represent most likely things or objects. They should be written in camel case with only the **first** letter capitalized for each word. Use whole words and avoid acronyms and abbreviations if possible. Interfaces should begin with the letter **I**. Base or abstract classes should denote themselves in the name as well as either **BaseClass or AbstractClass**. Examples:
+Class/Component/Interface names should be nouns, as they represent most likely things or objects. They should be written in camel case with only the **first** letter capitalized for each word. Use whole words and avoid acronyms and abbreviations if possible. Base or abstract classes should denote themselves in the name as well as either **BaseClass or AbstractClass**. Examples:
 
 ```
 -- DO THIS --
-URLConverter
-RSSReader
-Serializable
-ISearchEngine
-IResults
-BaseEntity
-AbstractLogger
+URLConverter.cfc
+RSSReader.cfc
+Serializable.cfc
+SearchEngineInterface.cfc
+Results.cfc
+BaseEntity.cfc
+AbstractLogger.cfc
 
 -- NOT THIS --
-urlConverter
-rssreader
-serializable
-iSearchEngine
-results
-entityToRuleThemAll
-ALogger
+urlConverter.cfc
+rssreader.cfc
+serializable.cfc
+iSearchEngine.cfc
+results.cfc
+entityToRuleThemAll.cfc
+ALogger.cfc
 ```
 
 
@@ -213,7 +222,12 @@ All CFML and custom tags should be writing in lower case form, just like HTML ta
 <cfhttp url="...">
 <cfabort>
 <cfdump var="#session#">
-<cfhttp url="#urladdress#" method="GET" resolveurl="Yes" throwOnError="Yes"/>
+<cfhttp url="#urladdress#" method="GET" resolveurl="Yes" />
+<cfhttp 
+      url="#urladdress#" 
+      method="GET" 
+      resolveurl="Yes" 
+      throwOnError="Yes"/>
 
 -- NOT THIS --
 <CFHTTP>
@@ -223,8 +237,7 @@ All CFML and custom tags should be writing in lower case form, just like HTML ta
 -- Unecessary Multi Line --
 <cfhttp url="#urladdress#" 
 method="GET" 
-resolveurl="Yes" 
-throwOnError="Yes"/>
+resolveurl="Yes" />
 ```
 
 
@@ -247,9 +260,6 @@ NICELOCATION = "Miami";
 Result = "";
 average-salary = "323";
 ```
-
-
-sd
 
 **[[⬆]](#TOC)**
 
@@ -353,8 +363,26 @@ obj.callMethod(
 	target 		= this,
 	name 		= "luis",
 	results		= true,
-	moreData 	= "false" 
+	moreData 	= false
 ); 
+
+args = {};
+args.target = this;
+args.name = "luis";
+args.results = true;
+args.moreData = false;
+
+obj.callMethod( argumentCollection = args );
+
+args = {
+  "target" = this,
+  "name" = "luis",
+  "results" = true,
+  "moreData" = false
+};
+
+obj.callMethod( argumentCollection = args );
+
 
 // NOT THIS
 obj.callMethod( target=this, name="luis", results=true, moreData="false" ); 
@@ -459,6 +487,7 @@ component{
 component{
 
 }
+
 ```
 
 
@@ -535,6 +564,14 @@ component accessors="true"{
 
 Be very careful of when to make internal properties public as you will be violating encapsulation (look at next point). One of the best reasons for making variables public is if they do not change and can act like static constants. If your variable does not meet this criteria, then DO NOT expose it as public.
 
+// DO THIS
+``` coldfusion
+<cfset variables.options = "add,remove" />
+<cfset variables.notFound = '_NOTFOUND_' />
+<cfset variables.eventCacheKeyPrefix = "cboxevent_event-" />
+```
+
+// NOT THIS
 ``` coldfusion
 <cfset this.OPTIONS = "add,remove">
 <cfset this.NOT_FOUND = '_NOTFOUND_'>
@@ -605,11 +642,11 @@ This means that if somebody persists (stores) this component in memory, subseque
 ``` js
 // DO THIS 
 <cffunction name="myFunction" access="public" returntype="void" output="false" hint="This methods does nothing">
-  <cfset var i = 0 />
-  <cfset var getData = "" />
-  <cfquery name="getData">
+  <cfset var results = "" />
+  <cfquery name="results">
   </cfquery>
-  <cfloop from="1" to ="20" index="i">
+  
+  <cfloop query="results">
   </cfloop>
 </cffunction>
 ``` 
@@ -644,7 +681,6 @@ Use the `returnType` attribute of the functions and the `type` attribute of the 
 
 Duck Typing is when you use the return type or type of `any`. This is a useful technique when dealing with a dynamic language such as ColdFusion. This means that the argument or object returned can be ANYTHING, which then your caller needs to determine what to do with it and what it is based on pre-determined conventions. Usually you will need to document this in a `@return ` annotation within your function call to document the possibilities.
 
-A side effect of not using a strong type is a speed enhancement, since ColdFusion does not check the validity of the types. This side effect should not be used to get more performance, unless absolutely necessary.
 This dynamic nature of arguments and return types brings forth great power in a dynamic language, but it also opens holes for runtime exceptions. However, thanks to unit testing, these runtime exceptions should be minimized. So as a followup guideline to duck typing is that you must have unit tests for these components.
 
 **[[⬆]](#TOC)**
@@ -657,12 +693,24 @@ However, the one exception to referencing external scopes is when building **fac
 **[[⬆]](#TOC)**
 ### <a name="cfc-default-arguments">Default Arguments</a>
 
+Any required arguments should list before non-required arguments.
+
 In general, non-required arguments of a CFC method should have a default value specified, unless you will be programmatically checking for existence using `structKeyExists(arguments, "key")`, which sometimes is useful.
 
+// DO THIS
 ```js
+<cfargument name="memberId" type="numeric" required="true">
 <cfargument name="isReadOnly" type="boolean" default="false" required="false">
 <cfargument name="maxRows" type="numeric" default="10" required="false">
 ```
+
+// NOT THIS
+```js
+<cfargument name="memberId" type="numeric" required="true">
+<cfargument name="isReadOnly" type="boolean" required="false">
+<cfargument name="maxRows" type="numeric" required="false">
+```
+
 
 **[[⬆]](#TOC)**
 
@@ -871,12 +919,21 @@ if( isDefined("arguments.car") )
 
 **[[⬆]](#TOC)**
 
+## <a name="css">CSS General Rules</a>
+* Do not have inline style, create .css in assets/css (See CSS Documentation)
+* Do not override default style sheet (Bootstrap), use main.css as override
+
+## <a name="js">JavaScript General Rules</a>
+* Do not have inline javascript, create .js in assets/js to overide (See JavaScript Documentation)
+* Do not override default library (Bootstrap, jQuery, etc), use main.js as override
+
+
+**[[⬆]](#TOC)**
+
 ## <a name="cflint">CFLint Config</a>
 
 CFLint Documentation: 
 https://github.com/cflint/CFLint/blob/master/RULES.md
-
-More Info: https://docs.google.com/spreadsheets/d/1_FkG9Bm29MtsBRzme2EEVKxVU7jjqPaGzlmTyJx73YU/edit#gid=0
 
 ### BugProne
 
