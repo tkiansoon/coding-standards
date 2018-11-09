@@ -9,12 +9,12 @@
 	],
     "inheritParent": false,
     "parameters": {
-		  "TooManyFunctionsChecker.maximum" : 20,
-			"TooManyArgumentsChecker.maximum": 30,
-			"VariableNameChecker.maxLength" : 30,
-			"VariableNameChecker.minLength" : 2,
-			"ArgumentNameChecker.minLength" : 2,
-			"ArgumentNameChecker.maxLength" : 30,
-			"MethodNameChecker.maxLength": 30
+		  "TooManyFunctionsChecker.maximum" : 20
+		, "TooManyArgumentsChecker.maximum": 30
+		, "VariableNameChecker.maxLength" : 30
+		, "VariableNameChecker.minLength" : 2
+		, "ArgumentNameChecker.minLength" : 2
+		, "ArgumentNameChecker.maxLength" : 30
+		, "MethodNameChecker.maxLength": 30
 	}
 }
